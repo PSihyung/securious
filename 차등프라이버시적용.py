@@ -5,7 +5,7 @@ from collections import Counter
 from diffprivlib.mechanisms import Laplace
 
 #1. 데이터 프레임생성
-filename = 'C:/Users/user/OneDrive/문서/sandbox/주택담보대출승인장부.csv'
+filename = 'C:/Users/user/OneDrive/문서/sandbox/주택담보대출승인장부.csv' ## csv파일이 저장된 경로로 설정
 df = pd.read_csv(filename)
 
 
@@ -75,29 +75,29 @@ def laplace_mechanism(value,epsilon,sensitivity):
 
 sensitivity = 1.0
 
-#9. 연소득에 엡실론 추가
+#9. 연소득에 노이즈 추가
 
 df['연소득'] = df.apply(lambda row: laplace_mechanism(row['연소득']/100,row['risk'],sensitivity),axis=1)
 df['연소득'] = (df['연소득']*100).round().astype(int)
 
-#10. 신용점수에 엡실론 추가
+#10. 신용점수에 노이즈 추가
 
 df['신용점수'] = df.apply(lambda row: laplace_mechanism(row['신용점수']/10,row['risk'],sensitivity),axis=1)
 df['신용점수'] = (df['신용점수']*10).round().astype(int)
 df['신용점수'] = df['신용점수'].apply(lambda x: min(x, 1000))
 
-#11. DTI에 앱실론 추가
+#11. DTI에 노이즈 추가
 
 df['DTI'] = df.apply(lambda row: max(laplace_mechanism(row['DTI'],row['risk'], sensitivity), 1), axis=1)
 df['DTI'] = df['DTI'].round().astype(int)
 
 
-#12. 담보가치 에 앱실론 추가
+#12. 담보가치에 노이즈 추가
 
 df['담보가치'] = df.apply(lambda row: laplace_mechanism(row['담보가치']/100,row['risk'],sensitivity),axis=1)
 df['담보가치'] = (df['담보가치']*100).round().astype(int)
 
-#12. 근속연도에 앱실론 추가
+#12. 근속연도에 노이즈 추가
 
 df['근속연도'] = df.apply(lambda row: max(laplace_mechanism(row['근속연도'], row['risk'], sensitivity), 1), axis=1)
 df['근속연도'] = df['근속연도'].round().astype(int)
@@ -107,5 +107,5 @@ subset_df2 = df[['직업','연소득', '신용점수', 'DTI','근속연도','담
 
 
 
-subset_df2.to_csv('C:/Users/user/OneDrive/문서/sandbox/차등적용주택담보대출승인장부.csv', index=False, encoding='utf-8-sig')
+subset_df2.to_csv('C:/Users/user/OneDrive/문서/sandbox/차등적용주택담보대출승인장부.csv', index=False, encoding='utf-8-sig') ## 차등프라이버시가 적용된 데이터셋을 생성할 경로
 
